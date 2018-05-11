@@ -6,10 +6,17 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef _MSC_VER
 #include <unistd.h>
+#endif
 #include <math.h>
 
 #include "csv_parser/csvparser.h"
+
+//#if defined(_WIN32) /* || defined(_WIN64) */
+#ifdef _MSC_VER
+#define strtok_r strtok_s
+#endif
 
 #define TOK_AXIS_X      "x-axis"    /*done*/
 #define TOK_AXIS_Y      "y-axis"    /*done*/
@@ -144,11 +151,17 @@ cbool startsWith(const char *pre, const char *str)
     return lenstr < lenpre ? FALSE : strncmp(pre, str, lenpre) == 0;
 }
 
+#ifdef _MSC_VER
+#define S_ISREG(a)  (a & _S_IFREG)
+#endif
+
+
 int is_regular_file(const char *path)
 {
+    int res;
     struct stat path_stat;
-    stat(path, &path_stat);
-    return S_ISREG(path_stat.st_mode);
+    res = stat(path, &path_stat);
+    return ((res == 0) && S_ISREG(path_stat.st_mode)) ? 1 : 0;
 }
 
 clist* parse_csv(char * link, unsigned int * size)

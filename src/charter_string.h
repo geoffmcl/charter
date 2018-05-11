@@ -12,7 +12,14 @@ void  cstr_free  (cstr        *str);
 cstr* cstr_add   (cstr        *str,
                   char        *data);
 
+#ifdef _MSC_VER
+void  cstr_printf(cstr       *str,
+    const char *fmt,
+    ...);
+#else
 void  cstr_printf (cstr       *str,
                    const char *fmt,
                    ...) __attribute__ ((format (printf, 2, 3)));
+#endif
+
 #endif
